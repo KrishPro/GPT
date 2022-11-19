@@ -8,7 +8,7 @@ from tqdm import tqdm
 from typing import Callable, List
 from unidecode import unidecode
 from tokenizers import Tokenizer
-import multiprocessing as ml
+import multiprocessing as mp
 import time
 import math
 import os
@@ -30,7 +30,7 @@ def count_texts(input_path:str, guessed_num_sentences:int=None):
 
 
 def apply(input_path: str, output_path: str, function: Callable[[str], str], chunk_size: int = 2**15):
-    pool = ml.Pool(processes=os.cpu_count())
+    pool = mp.Pool(processes=mp.cpu_count())
     num_input_sentences = count_lines(input_path, guessed_num_sentences = 147877291)
 
     with open(input_path, 'r') as input_file:
@@ -72,7 +72,7 @@ def split_sequences(tokens: List[int], seq_len:int) -> List[List[int]]:
         seqs_tokens = [tokens[(i*seq_len):((i+1)*seq_len)] for i in range(num_seqs_tokens)]
         if (seq_len*0.5) < len(seqs_tokens[-1]) < seq_len:
             seqs_tokens[-1] = seqs_tokens[-1] + ([0]*(seq_len-len(seqs_tokens[-1])))
-        elif len(seqs_tokens[-1]) < (seq_len*0.5):
+        elif len(seqs_tokens[-1]) <= (seq_len*0.5):
             seqs_tokens = seqs_tokens[:-1]
 
     return seqs_tokens
