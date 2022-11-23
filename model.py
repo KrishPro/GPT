@@ -125,7 +125,7 @@ class LanguageModel(nn.Module):
 
         self.output: Callable[[torch.Tensor], torch.Tensor] = nn.Linear(d_model, vocab_size)
 
-        self.mask_token = -1+25
+        self.mask_token = -1e+25
         self.mask = torch.empty(max_len, max_len).fill_(self.mask_token).triu_(1)
 
     def forward(self, tokens: torch.Tensor):
