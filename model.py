@@ -126,7 +126,7 @@ class LanguageModel(nn.Module):
         self.output: Callable[[torch.Tensor], torch.Tensor] = nn.Linear(d_model, vocab_size)
 
         self.mask_token = -1e+25
-        self.mask = torch.empty(max_len, max_len).fill_(self.mask_token).triu_(1)
+        self.mask = torch.zeros(max_len, max_len).fill_(self.mask_token).triu_(1)
 
     def forward(self, tokens: torch.Tensor):
         """
@@ -135,7 +135,7 @@ class LanguageModel(nn.Module):
         returns: (B, S, V)
         """
 
-        pad_mask = torch.empty(tokens.shape, device=tokens.device).masked_fill_(tokens == self.pad_idx, self.mask_token)
+        pad_mask = torch.zeros(tokens.shape, device=tokens.device).masked_fill_(tokens == self.pad_idx, self.mask_token)
         attn_mask = self.mask[:tokens.size(1), :tokens.size(1)].to(tokens.device)
 
         attn_mask = attn_mask.unsqueeze(0) + pad_mask.unsqueeze(1) + pad_mask.unsqueeze(2)
